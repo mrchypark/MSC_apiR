@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>[마소콘]R로 만드는 API서버 삽질기</title>
+    <meta charset="utf-8">
+    <meta name="author" content="박찬엽" />
+    <link href="libs/remark-css/example.css" rel="stylesheet" />
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-47822682-14', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <link rel="stylesheet" href="custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+class: center, middle, title-slide, inverse
+
+## [MASOCON 2017]
+## R로 만드는 API서버 삽질기
+
+### &lt;https://mrchypark.github.io/MSC_apiR&gt;
+### .small[[스타누르기](https://github.com/mrchypark/apiR)는 컨텐츠 제작자를 춤추게 합니다.]
+#### [[pdf버전]](https://github.com/mrchypark/MSC_apiR/blob/master/docs/apiR.pdf) [[문의하기]](http://pf.kakao.com/_RXANd) [[의견 및 오류 신고]](https://github.com/mrchypark/MSC_apiR/issues/new)
+
+
+.pull-left[
+  .pull-right[
+    ![](http://www.imaso.co.kr/wp-content/uploads/2017/11/xmaso_272_90-1.png.pagespeed.ic.uSeG8QUU4f.png)
+  ]
+]
+.pull-right[
+.pull-left[
+### 박찬엽
+
+]]
+
+---
+class: inverse
+
+## 발표자 소개
+.center[
+  ### .pen-p[질문 / 상담 / 잡담 대환영!]
+]
+
+.pull-left[
+  .pull-right[
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+    ![](https://avatars2.githubusercontent.com/u/6179259?v=4&amp;s=460)
+  ]
+]
+.pull-right[
+### 박찬엽    
+- 서울도시가스 선행연구팀 연구원
+  * 챗봇 엔진 개발 및 서버 구축
+- 패스트 캠퍼스 데이터 분석 R 강의
+  * [데이터 분석을 위한 중급 R 프로그래밍](http://www.fastcampus.co.kr/data_camp_dabrp/)
+- R 네이버 뉴스 크롤러 [N2H4](https://github.com/forkonlp/N2H4) 관리자
+  * [ForkonLP](https://forkonlp.github.io/) 프로젝트
+  
+  
+- .yellow[**KAKAO**]@[알코홀릭](http://pf.kakao.com/_RXANd) R 질문방
+- .blue[**FACEBOOK**]@[mrchypark](https://www.facebook.com/mrchypark)
+- .gray[**GITHUB**]@[mrchypark](https://github.com/mrchypark)
+]
+
+---
+
+class: center, middle, title-slide, inverse
+
+## R로 만드는 API서버 삽질기
+
+---
+class: center, middle, title-slide, inverse
+
+## 자매품
+
+## .pen-p[[R로 웹 데이터를 가져오는 4가지 방법.tiny[(은 크롤링)]](https://mrchypark.github.io/getWebR/)]
+
+---
+class: center, middle, title-slide, inverse
+
+  
+## 의사 결정을 위한 데이터 분석 프로젝트의 단계
+
+### [데이터 확보][101] - [전처리][102] - [모델링][103] - [시각화][104] - [문서화][105]
+
+[101]: https://mrchypark.github.io/getWebR/
+[102]: https://mrchypark.github.io/dabrp_classnote3/class4
+[103]: https://mrchypark.github.io/tqk_docs/tidyquant-with-tqk.html
+[104]: https://mrchypark.github.io/dabrp_classnote3/class5
+[105]: https://mrchypark.github.io/dabrp_classnote2/class7
+---
+class: center, middle, title-slide, inverse
+
+  
+## 머신러닝 프로젝트의 단계
+
+### .gray[데이터 확보] - .gray[전처리] - .gray[모델링] - .yellow[제품화]
+
+---
+class: inverse
+
+## 제품화
+
+.large[머신러닝 프로젝트의 결과물을 서비스에 활용하는 것 또한 많은 노력이 필요함]
+
+![](http://www.mattford.com/blog/wp-content/uploads/2015/02/is-ford-discontinuing-the-v8-engine-2017-gt-raptor-mustang-ecoboost-v6-horsepower-output-epa-economy.jpg)
+
+---
+class: center, middle, title-slide, inverse
+
+## 제품화하는데 노력이 덜 드는 방법은 없을까
+
+---
+class: inverse
+
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/sa.png?raw=true)
+
+---
+class: inverse
+.pull-left[.large[
+## 마이크로 서비스형 설계
+
+장점
+
+1. 기능 단위로 완결되어 개발 단위가 작음
+1. 개별 서비스간의 의존성이 적어 유연함
+1. 장애시 전체 서비스의 영향이 적음
+
+
+단점
+
+1. 개별 서비스 테스트 + 전체 테스트가 필요
+1. 서비스간 interface 관리 이슈가 발생
+1. 전체 서비스의 추가적인 로그 관리 필요
+]]
+.pull-right[  
+&lt;br&gt;
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/msa.png?raw=true)
+]
+
+---
+class: center, middle, title-slide, inverse
+
+## 그럼 이거만 만들 줄 알면...!
+
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/ms.png?raw=true)
+
+
+
+---
+class: center, middle, title-slide, inverse
+
+## 그럼 작은 API 서버를 R로 만들어 보자
+
+---
+class: center, middle, title-slide, inverse
+
+## API 서버
+
+.large[[http 표준][http]으로 .pen-p[요청]을 받아서 처리하여 .pen-p[응답]하는 서버]
+
+![](http://thefoxlab.com/upload/technology_icon/API-Development.png)
+
+[http]: https://ko.wikipedia.org/wiki/HTTP
+
+---
+class: inverse
+
+## http/1.1 명세
+&lt;br&gt;
+&lt;br&gt;
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/http.png?raw=true)
+
+
+---
+class: center, middle, title-slide, inverse
+
+## 아 됐고!
+
+![](http://file2.instiz.net/data/file2/2015/10/15/6/6/7/66754086a69077c7ff4c79e9251de896.jpg)
+
+---
+class: center, middle, title-slide, inverse
+
+## 두 가지만 알면 됩니다.
+
+## GET .small[.pen-p[vs]] POST
+
+.footnote[
+
+ 심지어 POST만 알아도 됨.
+
+]
+
+---
+class: inverse
+
+## GET 이란
+
+.large[브라우저에서 주소를 입력하고 엔터를 치는 것!]
+
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/addressenter.png?raw=true)
+
+---
+class: inverse
+
+## 그럼 서버는
+
+.large[요청하면 주기로 정해진 데이터(ex&gt; 이미지 파일)를 제공]
+
+![](https://raw.githubusercontent.com/mrchypark/apiR/master/docs/img/source.png)
+
+---
+class: inverse
+
+## 우리 GET 서버가 할 일
+
+.large[서버에게 GET 요청이 오면 필요한 데이터를 전달해주기.]
+
+```{}
+"안녕하세요!!"
+```
+
+---
+class: inverse
+
+## [jug][jug]를 소개합니다!
+
+```{}
+if (!requireNamespace("jug")) {
+  install.packages("jug")}
+library(jug)
+
+jug() %&gt;% 
+  get("/", function(req, res, err){
+    res$json(enc2utf8("안녕하세요!!"))
+    return(res)
+  }) %&gt;%
+  simple_error_handler_json() %&gt;%
+  serve_it()
+```
+```
+Serving the jug at http://127.0.0.1:8080
+```
+
+[jug]: http://bart6114.github.io/jug/articles/jug.html
+
+---
+class: inverse
+
+## R로 [GET 요청][get]하기
+
+R에서 http 표준의 요청을 처리해 주는 유용한 패키지는 [httr][httr]입니다.
+
+
+```r
+if (!requireNamespace("httr")) {
+  install.packages("httr")}
+library(httr)
+
+target&lt;-"http://127.0.0.1:8080/"
+content(GET(url=target))
+```
+
+```
+## [1] "안녕하세요!!"
+```
+
+[get]: https://mrchypark.github.io/r/httr/api/%ED%95%9C%EA%B8%80-%EB%9D%84%EC%96%B4%EC%93%B0%EA%B8%B0-API-%EC%9D%B4%EC%9A%A9%ED%95%98%EA%B8%B0.html
+[httr]: https://github.com/r-lib/httr
+
+---
+class: center, middle, title-slide, inverse 
+
+## .yellow[GET 서버]를 만들었다!
+
+---
+class: center, middle, title-slide, inverse 
+
+## [jug][jug] 패키지를 이용해 R로 api 서버를 만드는 만듬
+
+[jug]: https://github.com/Bart6114/jug
+
+---
+class: center, middle, title-slide, inverse 
+
+## 이제 POST 서버를 만들어 보자
+
+---
+class: center, middle, title-slide, inverse 
+
+## 더 알아야 할 것
+
+## 요청(request) .small[.pen-p[vs]] 응답(response) + 헤더(header)&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+1. 헤더(header): &lt;http://www.w3ii.com/ko/http/http_header_fields.html&gt;
+]
+---
+class: inverse
+
+## GET과 POST의 차이점
+
+.large[요청 헤더에 body라는 이름으로 값을 보내면 POST이고 없으면 GET]
+
+--
+
+### R 함수로 예를 들면
+
+.pull-left[
+
+```r
+# 입력없이 결과를 주는 GET
+R.Version()
+```
+
+```
+## $platform
+## [1] "x86_64-w64-mingw32"
+## 
+## $arch
+## [1] "x86_64"
+## 
+## $os
+## [1] "mingw32"
+## 
+## $system
+## [1] "x86_64, mingw32"
+## 
+## $status
+## [1] ""
+## 
+## $major
+## [1] "3"
+## 
+## $minor
+## [1] "4.1"
+## 
+## $year
+## [1] "2017"
+## 
+## $month
+## [1] "06"
+## 
+## $day
+## [1] "30"
+## 
+## $`svn rev`
+## [1] "72865"
+## 
+## $language
+## [1] "R"
+## 
+## $version.string
+## [1] "R version 3.4.1 (2017-06-30)"
+## 
+## $nickname
+## [1] "Single Candle"
+```
+]
+.pull-right[
+
+```r
+# a, b 입력으로 결과를 주는 POST
+a&lt;-1;b&lt;-2
+sum(a,b)
+```
+
+```
+## [1] 3
+```
+]
+
+---
+class: inverse
+
+## 우리 POST 서버가 할 일
+
+.large[서버에게 POST 요청이 한글 문장을 "sent"라는 이름으로 같이 보내면 띄어쓰기 개수를 세서 줌.]
+
+```{}
+# 입력
+"{sent='R로 만드는 API서버 삽질기'}"
+
+# 예상 결과
+"3"
+```
+
+---
+class: inverse
+
+## stringr with jug
+
+.large[[stringr][stringr]은 [정규표현식][regex]을 활용한 글자 처리를 도와주는 패키지]
+
+```{}
+if (!requireNamespace("jug")) {
+  install.packages("jug")}
+library(jug)
+
+if (!requireNamespace("stringr")) {
+  install.packages("stringr")}
+library(stringr)
+
+count_ws&lt;-function(sent){
+  stringr::str_count(sent, "[[:space:]]")
+}
+
+jug() %&gt;% 
+  post("/", decorate(count_ws)) %&gt;%
+  simple_error_handler_json() %&gt;% 
+  serve_it()
+  
+```
+
+[stringr]: https://github.com/tidyverse/stringr
+[regex]: https://mrchypark.github.io/dabrp_classnote3/class4
+
+---
+class: inverse
+
+## R로 POST 요청하기
+
+.large[[httr][httr]로 POST 요청을 해보겠습니다.]
+
+
+```r
+library(httr)
+
+url&lt;-"http://127.0.0.1:8080"
+body&lt;-list(sent="R로 만드는 API서버 삽질기")
+content(POST(url, body=body),"text")
+```
+
+```
+## No encoding supplied: defaulting to UTF-8.
+```
+
+```
+## [1] "3"
+```
+
+---
+class: center, middle, title-slide, inverse 
+
+## .yellow[POST 서버]를 만들었다!
+
+---
+class: center, middle, title-slide, inverse 
+
+## R의 서버 개발 패키지들
+
+### [httpuv][httpuv], [Rserve][Rserve], [jug][jug], [plumber][plumber], [fiery][fiery]
+
+[httpuv]: https://github.com/rstudio/httpuv
+[Rserve]: https://github.com/s-u/Rserve
+[jug]: https://github.com/Bart6114/jug
+[plumber]: https://github.com/trestletech/plumber
+[fiery]: https://github.com/thomasp85/fiery
+
+---
+class: center, middle, title-slide, inverse 
+
+## 이렇게 많은 패키지가 있는데...
+
+---
+class: center, middle, title-slide, inverse 
+
+## 오픈소스 사용시 중요한 점.
+
+### 사용자층이 넓을 것, .yellow[설명서가 충실할 것], 버전이 1.X.X 이상일 것 등등
+
+---
+class: center, middle, title-slide, inverse 
+
+## [reticulate](https://github.com/rstudio/reticulate) 를 소개합니다!
+
+.large[python 패키지를 R에서 사용할 수 있게 해주는 패키지]
+
+---
+class: center, middle, title-slide, inverse 
+
+## [Flask](https://github.com/pallets/flask)
+
+.large[python의 가볍고 유명한 웹 서버 개발 프레임워크]
+
+---
+class: center, middle, title-slide, inverse 
+
+## github 스타 수
+.pull-left[
+
+[plumber][plumber]: 453    
+[Rserve][Rserve]: 161    
+[jug][jug]: 119    
+[fiery][fiery]: 114    
+[httpuv][httpuv]: 98    
+
+]
+.pull-right[
+# [Flask](https://github.com/pallets/flask): 30,605    
+]
+
+[httpuv]: https://github.com/rstudio/httpuv
+[Rserve]: https://github.com/s-u/Rserve
+[jug]: https://github.com/Bart6114/jug
+[plumber]: https://github.com/trestletech/plumber
+[fiery]: https://github.com/thomasp85/fiery
+
+---
+class: center, middle, title-slide, inverse 
+
+## R로 api 서버를 만드는 두 번째 방법!
+
+## python의 [flask][flask]를 이용하기
+
+[flask]: https://github.com/pallets/flask
+
+---
+class: center, middle, title-slide, inverse 
+
+## [lumiamitie][flaskr]님께서 초기 .yellow[삽질]을 대신해 주셨습니다!
+
+&lt;http://lumiamitie.github.io/r/flask-on-r/&gt;
+
+![](https://raw.githubusercontent.com/mrchypark/apiR/master/docs/img/flaskr.png)
+
+[flaskr]: http://lumiamitie.github.io/r/flask-on-r/
+
+---
+class: inverse
+
+## GET 서버 예시
+
+```{}
+library('reticulate')
+
+flask = import('flask')
+app = flask$Flask('__main__')
+
+app$route('/')({
+  index = function() {return('Hello R user Conference!')}
+})
+
+app$run()
+```
+
+---
+class: center, middle, title-slide, inverse
+
+# 시연
+
+![](https://raw.githubusercontent.com/mrchypark/apiR/master/docs/img/chatbot.png)
+
+---
+class: inverse
+
+## flask on r 
+
+.pull-left[
+### 장점
+
+- flask의 풍부한 자료를 활용
+
+![](http://mblogthumb3.phinf.naver.net/20151130_130/jklcompany21_1448871365584EQsUP_PNG/%C5%E4%B3%A2_%BD%C5%B3%AD%B4%D9.png?type=w2)
+]
+.pull-right[
+### 단점
+
+- python 도 알아야 함
+
+![](http://mblogthumb2.phinf.naver.net/20140408_273/kkyy20455_1396957263255wQqIn_PNG/9.png?type=w2)
+]
+
+---
+class: center, middle, title-slide, inverse
+
+## 더 좋은 방법은 없을까
+
+---
+class: inverse
+
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/faas.png?raw=true)
+
+---
+class: center, middle, title-slide, inverse
+
+## 서버도 몰라도 됨
+
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/mstof.png?raw=true)
+
+---
+class: center, middle, title-slide, inverse
+
+## serverless로 R 함수를 api 서버로 만들자
+
+[![](https://camo.githubusercontent.com/cf01eefb5b6905f3774376d6d1ed55b8f052d211/68747470733a2f2f626c6f672e616c6578656c6c69732e696f2f636f6e74656e742f696d616765732f323031372f30382f666161735f736964652e706e67)][faas]
+
+[faas]: https://github.com/openfaas/faas
+
+---
+class: center, middle, title-slide, inverse
+
+![](https://camo.githubusercontent.com/08bc7c0c4f882ef5eadaed797388b27b1a3ca056/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f4446726b46344e586f41414a774e322e6a7067)
+
+---
+class: inverse 
+
+## 표준 입출력으로 함수 작성
+
+```{}
+## 표준 입력을 받아 line 객체로 저장
+f &lt;- file("stdin")
+open(f)
+line&lt;-readLines(f, n=1, warn = FALSE)
+
+## 데이터를 처리하여 result  객체로 저장
+result&lt;-paste0("Hi ", line)
+
+## 표준 출력으로 결과 전달
+write(result, stderr())
+```
+
+---
+class: inverse
+
+## 친절한 [예시](https://github.com/openfaas/faas/tree/master/sample-functions/BaseFunctions/R)
+
+![](https://github.com/mrchypark/apiR/blob/master/docs/img/rfaas.png?raw=true)
+
+---
+class: inverse
+
+## 서버는 몰라도
+
+[docker](https://www.docker.com/)를 좀 알면 편합니다.
+
+```{}
+FROM artemklevtsov/r-alpine:latest
+
+ADD https://github.com/openfaas/faas/releases/download/0.6.1/fwatchdog /usr/bin
+RUN chmod +x /usr/bin/fwatchdog
+
+WORKDIR /root/
+
+COPY handler.R .
+
+ENV fprocess="Rscript handler.R"
+
+HEALTHCHECK --interval=1s CMD [ -e /tmp/.lock ] || exit 1
+
+CMD ["fwatchdog"]
+```
+
+
+---
+class: center, middle, title-slide, inverse
+
+[![](https://appirio.com/wp-content/uploads/2014/01/docker-logo-300x248.png)](https://www.docker.com/)
+
+## .pen-p[는 사랑입니다.]
+
+---
+class: center, middle, title-slide, inverse
+
+## R로 api 서버를 만드는데 혼자 벅차다!
+
+---
+class: center, middle, title-slide, inverse
+
+## 저한테 연락하시면 됩니다.
+.center[
+  [![](https://item.kakaocdn.net/do/d0195d9f27e6eab9548b7ce619b07c54617ea012db208c18f6e83b1a90a7baa7)](http://pf.kakao.com/_RXANd)
+]
+---
+class: center, middle, title-slide, inverse
+
+# 끝!
+### &lt;https://mrchypark.github.io/MSC_apiR&gt;
+
+#### [[pdf버전]](https://github.com/mrchypark/MSC_apiR/blob/master/docs/apiR.pdf) [[문의하기]](http://pf.kakao.com/_RXANd) [[의견 및 오류 신고]](https://github.com/mrchypark/MSC_apiR/issues/new)
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});
+(function() {var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler"); if (!r) return; s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }"; d.head.appendChild(s);})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
