@@ -75,6 +75,11 @@ class: inverse
 ]
 
 ---
+class: center, middle, title-slide, inverse
+
+## 개발자 .yellow[아님] 주의
+![](http://mblogthumb2.phinf.naver.net/20150128_89/kimsdky_1422426953109P25hE_JPEG/KakaoTalk_20141021_160816600.jpg?type=w2)
+---
 
 class: center, middle, title-slide, inverse
 
@@ -268,6 +273,13 @@ R에서 http 표준의 요청을 처리해 주는 유용한 패키지는 [httr][
 ```r
 if (!requireNamespace("httr")) {
   install.packages("httr")}
+```
+
+```
+## Loading required namespace: httr
+```
+
+```r
 library(httr)
 
 target&lt;-"http://127.0.0.1:8080/"
@@ -626,6 +638,13 @@ class: inverse
 if (!requireNamespace("googleformr")){
   devtools::install_github("data-steve/googleformr", dependencies = TRUE)
 }
+```
+
+```
+## Loading required namespace: googleformr
+```
+
+```r
 library(googleformr)
 ```
 

@@ -74,6 +74,11 @@ class: inverse
 ]
 
 ---
+class: center, middle, title-slide, inverse
+
+## 개발자 .yellow[아님] 주의
+![](http://mblogthumb2.phinf.naver.net/20150128_89/kimsdky_1422426953109P25hE_JPEG/KakaoTalk_20141021_160816600.jpg?type=w2)
+---
 
 class: center, middle, title-slide, inverse
 
@@ -662,6 +667,11 @@ screen은 ssh를 닫아도 안에 있는 window session을 유지시켜 줌.
 
 .pull-left[![](http://cfile7.uf.tistory.com/image/224AF148564211851597D0)]
 .pull-right[![](http://cfile25.uf.tistory.com/image/2522F049564212CC1DCEB7)]
+
+---
+class: center, middle, title-slide, inverse
+
+## 그래도 머신러닝 프로젝트 하는데 서버 만드는 법까지 알아야 하는가?
 
 ---
 class: center, middle, title-slide, inverse
