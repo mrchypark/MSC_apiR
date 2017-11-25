@@ -268,6 +268,13 @@ R에서 http 표준의 요청을 처리해 주는 유용한 패키지는 [httr][
 ```r
 if (!requireNamespace("httr")) {
   install.packages("httr")}
+```
+
+```
+## Loading required namespace: httr
+```
+
+```r
 library(httr)
 
 target&lt;-"http://127.0.0.1:8080/"
@@ -590,8 +597,8 @@ class: center, middle, title-slide, inverse
 ---
 class: center, middle, title-slide, inverse
 
-## G사 클라우드 + k사 p친구 + jug(R) + G사 Form(?!?)
-### .yellow[서버 + 채팅 플랫폼 + 웹서버 + log용 DB]
+## G사 클라우드 + k사 p친구 + jug(R) + mariaDB
+### 서버 + 채팅 플랫폼 + 웹서버 + log용 DB
 
 ---
 class: center, middle, title-slide, inverse
@@ -600,9 +607,114 @@ class: center, middle, title-slide, inverse
 ## &lt;https://github.com/mrchypark/wthr_chatr&gt;
 
 ---
-
+class: center, middle, title-slide
 ## [체레스터 친구하고 날씨 물어보기](http://pf.kakao.com/_FzLHd)
-.pull-center[.ori[![](https://github.com/mrchypark/MSC_apiR/blob/master/docs/img/qrcode_350.png?raw=true)]]
+![](https://github.com/mrchypark/MSC_apiR/blob/master/docs/img/qrcode_350.png?raw=true)
+
+---
+class: center, middle, title-slide, inverse
+
+## log는 남기고 싶고, 일반DB는 너무 불편하고.tiny[(돈내야 하고...)]
+
+---
+class: center, middle, title-slide, inverse
+
+## G사 클라우드 + k사 p친구 + jug(R) + .yellow[G사 Form(?!?)]
+### 서버 + 채팅 플랫폼 + 웹서버 + log용 DB
+
+---
+class: inverse
+## googleformr
+
+[googleformr](https://github.com/data-steve/googleformr)는 구글 form 기능을 이용해서 api 호출 없이 구글 sheet에 데이터를 입력하는 방법을 제공합니다.
+
+
+```r
+if (!requireNamespace("googleformr")){
+  devtools::install_github("data-steve/googleformr", dependencies = TRUE)
+}
+```
+
+```
+## Loading required namespace: googleformr
+```
+
+```r
+library(googleformr)
+```
+
+---
+class: inverse
+구글 폼 만들기
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr1.png)
+---
+class: inverse
+새로만들기
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr2.png)
+---
+class: inverse
+더보기
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr3.png)
+---
+class: inverse
+Google 설문지 선택
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr4.png)
+---
+class: inverse
+설문지 작성 화면
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr5.png)
+---
+class: inverse
+질문 세팅 - 질문 제목으로 값을 받음
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr6.png)
+---
+class: inverse
+응답탭 선택
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr7.png)
+---
+class: inverse
+스프레드시트 만들기 클릭
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr8.png)
+---
+class: inverse
+새스프레드시트 만들기로 선택후 만들기
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr9.png)
+---
+class: inverse
+스프레드시트로 연결 완료
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr10.png)
+---
+class: inverse
+설문지 파일과 스프레드시트 파일 확인
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr11.png)
+
+---
+class: inverse
+폼 입력 url 확인 - /edit을 제외한 전체 url
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/formr12.png)
+---
+class: inverse
+## 폼 입력 url로 입력 함수 만들기
+
+위에서 복사한 url(/edit은 제외)을 이용해서 입력하는 함수를 작성합니다. body의 list 내 데이터 이름은 설문 항목명이어야 합니다.
+
+```{}
+form &lt;- "https://docs.google.com/forms/d/XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+ping &lt;- googleformr::gformr(form)
+body&lt;-list(question1=data1,
+           question2=data2,
+           question3=data3)
+ping(body)
+```
+
+--
+class: inverse
+### 설문지 질문 이름을 파악하고 싶을 때
+
+```{}
+form &lt;- "https://docs.google.com/forms/d/XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+form %&gt;% get_form() %&gt;% get_form_questions()
+```
 
 ---
 class: center, middle, title-slide, inverse
