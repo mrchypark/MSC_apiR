@@ -28,7 +28,7 @@ class: center, middle, title-slide, inverse
 
 ### &lt;https://mrchypark.github.io/MSC_apiR&gt;
 ### .small[[스타누르기](https://github.com/mrchypark/apiR)는 컨텐츠 제작자를 춤추게 합니다.]
-#### [[pdf버전]](https://github.com/mrchypark/MSC_apiR/blob/master/docs/apiR.pdf) [[문의하기]](http://pf.kakao.com/_RXANd) [[의견 및 오류 신고]](https://github.com/mrchypark/MSC_apiR/issues/new)
+#### [[pdf버전]](https://github.com/mrchypark/MSC_apiR/blob/master/docs/MSC_apiR.pdf) [[문의하기]](http://pf.kakao.com/_RXANd) [[의견 및 오류 신고]](https://github.com/mrchypark/MSC_apiR/issues/new)
 
 
 .pull-left[
@@ -268,13 +268,6 @@ R에서 http 표준의 요청을 처리해 주는 유용한 패키지는 [httr][
 ```r
 if (!requireNamespace("httr")) {
   install.packages("httr")}
-```
-
-```
-## Loading required namespace: httr
-```
-
-```r
 library(httr)
 
 target&lt;-"http://127.0.0.1:8080/"
@@ -633,13 +626,6 @@ class: inverse
 if (!requireNamespace("googleformr")){
   devtools::install_github("data-steve/googleformr", dependencies = TRUE)
 }
-```
-
-```
-## Loading required namespace: googleformr
-```
-
-```r
 library(googleformr)
 ```
 
@@ -715,6 +701,32 @@ class: inverse
 form &lt;- "https://docs.google.com/forms/d/XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 form %&gt;% get_form() %&gt;% get_form_questions()
 ```
+
+---
+class: inverse
+
+## 성공!
+
+```{}
+Rscript app.R
+```
+
+![](https://raw.githubusercontent.com/mrchypark/MSC_apiR/master/docs/img/ssh.png)
+
+---
+class: center, middle, title-slide, inverse
+
+## ssh를 닫으니까 서버도 꺼져!?!??!
+
+---
+class: inverse
+
+## [screen](http://dreamlog.tistory.com/470)
+
+screen은 ssh를 닫아도 안에 있는 window session을 유지시켜 줌.
+
+.pull-left[![](http://cfile7.uf.tistory.com/image/224AF148564211851597D0)]
+.pull-right[![](http://cfile25.uf.tistory.com/image/2522F049564212CC1DCEB7)]
 
 ---
 class: center, middle, title-slide, inverse
@@ -822,7 +834,7 @@ class: center, middle, title-slide, inverse
 # 끝!
 ### &lt;https://mrchypark.github.io/MSC_apiR&gt;
 
-#### [[pdf버전]](https://github.com/mrchypark/MSC_apiR/blob/master/docs/apiR.pdf) [[문의하기]](http://pf.kakao.com/_RXANd) [[의견 및 오류 신고]](https://github.com/mrchypark/MSC_apiR/issues/new)
+#### [[pdf버전]](https://github.com/mrchypark/MSC_apiR/blob/master/docs/MSC_apiR.pdf) [[문의하기]](http://pf.kakao.com/_RXANd) [[의견 및 오류 신고]](https://github.com/mrchypark/MSC_apiR/issues/new)
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
